@@ -23,7 +23,6 @@ import com.fsancho.crudfsancho.exception.ExceptionFactory;
 import com.fsancho.crudfsancho.exception.enums.ExceptionType;
 import com.fsancho.crudfsancho.service.ProductoService;
 
-
 /**
  * Esta clase es el servicio de productos, obtiene tipo repository desde core
  * 
@@ -33,65 +32,52 @@ import com.fsancho.crudfsancho.service.ProductoService;
 @RequestMapping("/api")
 public class ProductosController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductosController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProductosController.class);
 
-    @Autowired
-    ProductoService productoService;
+	@Autowired
+	ProductoService productoService;
 
-    @GetMapping("/productos/{id}")
-    public ResponseEntity<Producto> getById(@PathVariable long id) {
-        Optional<Producto> producto = productoService.getById(id);
-        if (!producto.isPresent()) {
-        	logger.info("There is not product");
-        	throw ExceptionFactory.create(ExceptionType.HTTP_NOT_FOUND);
-        } 
-        return new ResponseEntity<Producto>(producto.get(), HttpStatus.OK);
-            
-    }
+	@GetMapping("/productos/{id}")
+	public ResponseEntity<Producto> getById(@PathVariable long id) {
+		Optional<Producto> producto = productoService.getById(id);
+		if (!producto.isPresent()) {
+			logger.info("There is not product");
+			throw ExceptionFactory.create(ExceptionType.HTTP_NOT_FOUND);
+		}
+		return new ResponseEntity<Producto>(producto.get(), HttpStatus.OK);
 
-    @GetMapping("/productos")
-    public ResponseEntity<List<Producto>> getAll() {
-        try {
-            List<Producto> productos = productoService.getAll();
-            if (productos.isEmpty()) {
-                logger.info("There are no product to list");
-                return new ResponseEntity<List<Producto>>(HttpStatus.NO_CONTENT);
-            }
-            logger.info("There are products to list");
-            return new ResponseEntity<List<Producto>>(productoService.getAll(), HttpStatus.OK);
+	}
 
-        } catch (Exception e) {
-            logger.error("Produced exception:" + e.getMessage());
-            return new ResponseEntity<List<Producto>>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+	@GetMapping("/productos")
+	public ResponseEntity<List<Producto>> getAll() {
+		List<Producto> productos = productoService.getAll();
+		if (productos.isEmpty()) {
+			throw ExceptionFactory.create(ExceptionType.HTTP_NOT_FOUND);
+		}
+		logger.info("There are products to list");
+		return new ResponseEntity<List<Producto>>(productoService.getAll(), HttpStatus.OK);
+	}
 
-    @PostMapping("/productos")
-    public ResponseEntity<Producto> insertProducto(@RequestBody Producto producto) throws ServiceException {
-        try {
-            Producto productoSaved = productoService.save(producto);
-            logger.info("Product created");
-            return new ResponseEntity<Producto>(productoSaved, HttpStatus.CREATED);
-        } catch (Exception e) {
-            logger.error("Produced exception:" + e.getMessage());
-            return new ResponseEntity<Producto>(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
+	@PostMapping("/productos")
+	public ResponseEntity<Producto> insertProducto(@RequestBody Producto producto) throws ServiceException {
+		Producto productoSaved = productoService.save(producto);
+		logger.info("Product created");
+		return new ResponseEntity<Producto>(productoSaved, HttpStatus.CREATED);
+	}
 
-    @PutMapping("/productos/{id}")
-    public ResponseEntity<Producto> updateProducto(@PathVariable("id") long id, @RequestBody Producto producto) {
-        Optional<Producto> OldProduct = productoService.getById(id);
+	@PutMapping("/productos/{id}")
+	public ResponseEntity<Producto> updateProducto(@PathVariable("id") long id, @RequestBody Producto producto) {
+		Optional<Producto> OldProduct = productoService.getById(id);
 
-        if (OldProduct.isPresent()) {
-            Producto newProduct = OldProduct.get();
-            newProduct.setNombre(producto.getNombre());
-            newProduct.setExiste(producto.isExiste());
-            newProduct.setFechaActualizacion(new Date());
-            logger.info("Product updated");
-            return new ResponseEntity<Producto>(productoService.save(newProduct), HttpStatus.OK);
-        } else {
-            logger.info("There is not product");
-            return new ResponseEntity<Producto>(HttpStatus.NOT_FOUND);
-        }
-    }
+		if (!OldProduct.isPresent()) {
+			throw ExceptionFactory.create(ExceptionType.HTTP_NOT_FOUND);
+		}
+		Producto newProduct = OldProduct.get();
+		newProduct.setNombre(producto.getNombre());
+		newProduct.setExiste(producto.isExiste());
+		newProduct.setFechaActualizacion(new Date());
+		logger.info("Product updated");
+		return new ResponseEntity<Producto>(productoService.save(newProduct), HttpStatus.OK);
+
+	}
 }

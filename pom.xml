@@ -47,6 +47,13 @@
             <artifactId>h2</artifactId>
         </dependency>
         
+        <!-- open-api (swagger) -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+        
 	</dependencies>
 
 	<build>
