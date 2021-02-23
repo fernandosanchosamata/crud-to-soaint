@@ -15,7 +15,6 @@ import com.fsancho.crudfsancho.service.ProductoService;
  * Esta clase es el servicio de productos, obtiene tipo repository desde core
  * 
  * @author: Fernando Alfredo Sancho Samata
- * @version: 21/04/2020
  */
 @Service
 public class ProductoServiceImpl implements ProductoService {
